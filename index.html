@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  <script src="./jquery.reticence.js"></script>
+  <style type="text/css">
+	span {font-size: 20px; }
+    #resizable { width: 350px; height: 300px; background: silver; overflow: hidden; }
+	.res1 {height: 50px; overflow: hidden;}
+	#resizable p {margin: 0; padding: 0 10px;}
+  </style>
+  <script>
+  $(document).ready(function() {
+    $("#resizable").resizable().find("span").reticence({reduceMode: "char"});
+	$(".res1 span").reticence();
+  });
+  </script>
+</head>
+<body style="font-size:62.5%;">
+  
+<div id="resizable">
+	<p style="text-align: justify"><span>Lorem ipsum <strong>dolor sit amet, <a href="teste">consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in</a> reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</strong> qui officia deserunt mollit anim id est laborum.</span></p>
+</div>
+<br>
+
+<table border="1">
+	<tr>
+		<th>Name</th>
+		<th>Description</th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td>jQuery</td>
+		<td><div class="res1"><span>Lorem ipsum <strong>dolor sit amet, <a href="teste">consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in</a> reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</strong> qui officia deserunt mollit anim id est laborum.</span></div></td>
+		<td nowrap>U$ 20.00</td>
+	</tr>
+	<tr>
+		<td>jQuery</td>
+		<td><div class="res1"><span>Lorem ipsum <strong>dolor sit amet, <a href="teste">consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in</a> reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa</strong> qui officia deserunt mollit anim id est laborum.</span></div></td>
+		<td nowrap>U$ 20.00</td>
+	</tr>
+</table>
+
+</body>
+</html>
