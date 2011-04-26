@@ -15,6 +15,7 @@
   $(document).ready(function() {
     $("#resizable").resizable().find("span").reticence({reduceMode: "char"});
 	$(".res1 span").reticence();
+	$(window).resize(function(){$(".res1 span").reticence();});
   });
   </script>
 </head>
