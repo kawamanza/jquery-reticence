@@ -1,12 +1,17 @@
 (function($) {
+    var reExtraSpace = /[\s\r\n][\s\r\n]+/g,
+        reTagAtEnd = /\s*(<[^>]+>)$/,
+        reTagName = /^<\/?([^\s>]+).*$/,
+        reDotsAtEnd = /[\s\.]+$/,
+        reReticenceAtEnd = /[\.\s]*<[^\/][^>]*>\s*\.\.\.\s*<\/[^>]*>(\s*<\/[^>]*>)*$/,
+        reLastWord = /\s*[^>\s]+\s*$/,
+        reLastChar = /[\s\.]*[^\s][\s\.]*$/;
     $.fn.reticence = function(options) {
         if (! options) options = {};
-        var reExtraSpace = /[\s\r\n][\s\r\n]+/g;
         return this.each(function() {
             var $this = $(this),
-                initialContent = $this.html().replace(reExtraSpace, ' '),
-                initialText = $this.text().replace(reExtraSpace, ' '),
-                maxTimes = initialText.length * 2 + 100,
+                reticence = $this.data("reticence"),
+                prepared = reticence, initialContent, maxTimes,
                 elementWithHiddenOverflow = null;
             $this.parents().each(function() {
                 var $node = $(this);
@@ -14,12 +19,16 @@
                 return elementWithHiddenOverflow == null;
             })
             if (elementWithHiddenOverflow == null) return;
+            if ( ! prepared ) {
+                reticence = {};
+                $this.data("reticence", reticence);
+                reticence.initialContent = $this.html().replace(reExtraSpace, ' ');
+                reticence.maxTimes = $this.text().replace(reExtraSpace, ' ').length * 2 + 100;
+            }
+            initialContent = reticence.initialContent;
+            maxTimes = reticence.maxTimes;
             function redrawText() {
                 var content, h, v = 0, v2, captures, c,
-                    reTagAtEnd = /\s*(<[^>]+>)$/,
-                    reDotsAtEnd = /[\s\.]+$/,
-                    reLastWord = /\s*[^>\s]+\s*$/,
-                    reLastChar = /[\s\.]*[^\s][\s\.]*$/,
                     parentHeight = elementWithHiddenOverflow.height(),
                     reReduceMode = options.reduceMode == "char" ? reLastChar : reLastWord;
                 do {
@@ -44,7 +53,7 @@
                         if (captures && captures.length) {
                             content += captures.join("");
                         }
-                        content = content.replace(/<[^>]*>\s*\.\.\.\s*<\/[^>]*>\s*$/, '...');
+                        content = content.replace(reReticenceAtEnd, '...$1');
                     } else {
                         content = initialContent;
                     }
@@ -53,14 +62,16 @@
                 } while (h > parentHeight && v++ < maxTimes);
             }
             function getTagName(str) {
-                return str && str.replace(/^<\/?([^\s>]+).*$/, "$1");
+                return str && str.replace(reTagName, "$1");
             }
             redrawText();
-            var redrawing = null;
-            if ( options.resizable !== false ) elementWithHiddenOverflow.resize(function() {
-              if (redrawing) clearTimeout(redrawing);
-              redrawing = setTimeout(redrawText, 25);
-            });
+            if ( options.resizable !== false && ! prepared ) {
+                var redrawing = null;
+                elementWithHiddenOverflow.resize(function() {
+                    if (redrawing) clearTimeout(redrawing);
+                    redrawing = setTimeout(redrawText, 30);
+                });
+            }
         });
     }
 })(jQuery);
