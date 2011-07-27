@@ -2,6 +2,7 @@
     var SCAN_WORDS = /\s*(?:<.*?>|[^\s<]+)/gm,
         SCAN_CHARS = /\s*(?:<.*?>|[^\s<])/gm,
         TAG_NAME = /^\s*<\/?([^\s>]+).*$/m,
+        closingTag = "</",
         dataName = "reticence";
     function tagName(str) {
         return str && str.replace(TAG_NAME, "$1");
@@ -16,7 +17,7 @@
                 do {
                     c = scan[p--];
                     if ((i = c.indexOf("<") + 1) != 0) {
-                        if (c.charAt(i) != "/" && captures.length && captures[0].indexOf("</") != -1 && tagName(c) == tagName(captures[0])) {
+                        if (c.charAt(i) != "/" && captures.length && captures[0].indexOf(closingTag) != -1 && tagName(c) == tagName(captures[0])) {
                           captures.shift();
                         } else {
                           captures.unshift(c);
@@ -46,16 +47,15 @@
             rdata = $el.data(dataName),
             container = null,
             ancestor = $el;
+        if (rdata) {redraw($el); return;}
         $el.parents().each(function () {
             var $n = $(this), css = $n.css("overflow");
             if (css == "hidden") {container = $n;} else {ancestor = $n;}
             return container == null;
         });
         if (container == null) return;
-        if (! rdata) {
-            re = options.reduceMode == "char" ? SCAN_CHARS : SCAN_WORDS;
-            $el.data(dataName, {scan: $el.html().match(re), container: container, ancestor: ancestor});
-        }
+        re = options.reduceMode == "char" ? SCAN_CHARS : SCAN_WORDS;
+        $el.data(dataName, {scan: $el.html().match(re), container: container, ancestor: ancestor});
         redraw($el);
         if (options.resizable !== false && ! rdata) {
             bindRedraw($el);
