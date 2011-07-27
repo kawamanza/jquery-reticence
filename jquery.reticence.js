@@ -1,77 +1,70 @@
-(function($) {
-    var reExtraSpace = /[\s\r\n][\s\r\n]+/g,
-        reTagAtEnd = /\s*(<[^>]+>)$/,
-        reTagName = /^<\/?([^\s>]+).*$/,
-        reDotsAtEnd = /[\s\.]+$/,
-        reReticenceAtEnd = /[\.\s]*<[^\/][^>]*>\s*\.\.\.\s*<\/[^>]*>(\s*<\/[^>]*>)*$/,
-        reLastWord = /\s*[^>\s]+\s*$/,
-        reLastChar = /[\s\.]*[^\s][\s\.]*$/;
-    $.fn.reticence = function(options) {
-        if (! options) options = {};
-        return this.each(function() {
-            var $this = $(this),
-                reticence = $this.data("reticence"),
-                prepared = reticence, initialContent, maxTimes,
-                elementWithHiddenOverflow = null;
-            $this.parents().each(function() {
-                var $node = $(this);
-                if ($node.css("overflow") == "hidden") elementWithHiddenOverflow = $node;
-                return elementWithHiddenOverflow == null;
-            })
-            if (elementWithHiddenOverflow == null) return;
-            if ( ! prepared ) {
-                reticence = {};
-                $this.data("reticence", reticence);
-                reticence.initialContent = $this.html().replace(reExtraSpace, ' ');
-                reticence.maxTimes = $this.text().replace(reExtraSpace, ' ').length * 2 + 100;
-            }
-            initialContent = reticence.initialContent;
-            maxTimes = reticence.maxTimes;
-            function redrawText() {
-                var content, h, v = 0, v2, captures, c,
-                    parentHeight = elementWithHiddenOverflow.height(),
-                    reReduceMode = options.reduceMode == "char" ? reLastChar : reLastWord;
+(function ($) {
+    var SCAN_WORDS = /\s*(?:<.*?>|[^\s<]+)/gm,
+        SCAN_CHARS = /\s*(?:<.*?>|[^\s<])/gm,
+        TAG_NAME = /^\s*<\/?([^\s>]+).*$/m,
+        dataName = "reticence";
+    function tagName(str) {
+        return str && str.replace(TAG_NAME, "$1");
+    }
+    function redraw($el) {
+        var rdata = $el.data(dataName),
+            containerHeight = rdata.container.height(),
+            ancestor = rdata.ancestor, scan = rdata.scan,
+            p = scan.length - 1, i, c, captures = [], html, h, l;
+        do {
+            if (html) {
                 do {
-                    if ( content ) {
-                        captures = null;
-                        v2 = 0;
-                        do {
-                            if ( captures === null) {
-                                captures = [];
-                            } else {
-                                c = RegExp.$1;
-                                if ( c.charAt(1) != '/' && captures.length && captures[0].charAt(1) == '/' && getTagName(c) == getTagName(captures[0]) ) {
-                                    captures.shift();
-                                } else {
-                                    captures.unshift(c);
-                                }
-                                content = content.replace(reTagAtEnd, '')
-                            }
-                            content = content.replace(reDotsAtEnd, '');
-                        } while (v2++ < maxTimes && reTagAtEnd.test(content));
-                        content = content.replace(reReduceMode, "...");
-                        if (captures && captures.length) {
-                            content += captures.join("");
+                    c = scan[p--];
+                    if ((i = c.indexOf("<") + 1) != 0) {
+                        if (c.charAt(i) != "/" && captures.length && captures[0].indexOf("</") != -1 && tagName(c) == tagName(captures[0])) {
+                          captures.shift();
+                        } else {
+                          captures.unshift(c);
                         }
-                        content = content.replace(reReticenceAtEnd, '...$1');
-                    } else {
-                        content = initialContent;
                     }
-                    $this.html(content);
-                    h = $this.height();
-                } while (h > parentHeight && v++ < maxTimes);
+                    l = l - c.length;
+                    html = html.substr(0, l);
+                } while (i != 0 && p != -1);
+                $el.html(html + "..." + captures.join(""));
+            } else {
+                html = scan.join("");
+                l = html.length;
+                $el.html(html);
             }
-            function getTagName(str) {
-                return str && str.replace(reTagName, "$1");
-            }
-            redrawText();
-            if ( options.resizable !== false && ! prepared ) {
-                var redrawing = null;
-                elementWithHiddenOverflow.resize(function() {
-                    if (redrawing) clearTimeout(redrawing);
-                    redrawing = setTimeout(redrawText, 30);
-                });
-            }
+            h = ancestor.height();
+        } while (h > containerHeight && p != -1);
+    }
+    function bindRedraw($el) {
+        var r = null, f = function () {redraw($el);};
+        $el.data(dataName).container.resize(function () {
+            if (r) clearTimeout(r);
+            r = setTimeout(f, 30);
         });
     }
+    function applyReticence(elem, options) {
+        var $el = $(elem), re, html,
+            rdata = $el.data(dataName),
+            container = null,
+            ancestor = $el;
+        $el.parents().each(function () {
+            var $n = $(this), css = $n.css("overflow");
+            if (css == "hidden") {container = $n;} else {ancestor = $n;}
+            return container == null;
+        });
+        if (container == null) return;
+        if (! rdata) {
+            re = options.reduceMode == "char" ? SCAN_CHARS : SCAN_WORDS;
+            $el.data(dataName, {scan: $el.html().match(re), container: container, ancestor: ancestor});
+        }
+        redraw($el);
+        if (options.resizable !== false && ! rdata) {
+            bindRedraw($el);
+        }
+    }
+    $.fn.reticence = function (options) {
+        if (! options) options = {};
+        return this.each(function () {
+          applyReticence(this, options);
+        });
+    };
 })(jQuery);
