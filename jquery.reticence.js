@@ -17,10 +17,12 @@
                 do {
                     c = scan[p--];
                     if ((i = c.indexOf("<") + 1) != 0) {
-                        if (c.charAt(i) != "/" && captures.length && captures[0].indexOf(closingTag) != -1 && tagName(c) == tagName(captures[0])) {
-                          captures.shift();
+                        if (c.charAt(i) != "/" && captures.length
+                                && captures[0].indexOf(closingTag) != -1
+                                && tagName(c) == tagName(captures[0])) {
+                            captures.shift();
                         } else {
-                          captures.unshift(c);
+                            captures.unshift(c);
                         }
                     }
                     l = l - c.length;
@@ -55,7 +57,8 @@
         });
         if (container == null) return;
         re = options.reduceMode == "char" ? SCAN_CHARS : SCAN_WORDS;
-        $el.data(dataName, {scan: $el.html().match(re), container: container, ancestor: ancestor});
+        $el.data(dataName,
+            {scan: $el.html().match(re), container: container, ancestor: ancestor});
         redraw($el);
         if (options.resizable !== false && ! rdata) {
             bindRedraw($el);
