@@ -1,17 +1,33 @@
+/*!
+ * jQuery-Reticence JavaScript Plugin v0.2.0
+ * http://plugins.jquery.com/project/Reticence
+ *
+ * Copyright 2011, Marcelo Manzan
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ * http://en.wikipedia.org/wiki/MIT_License
+ * http://en.wikipedia.org/wiki/GNU_General_Public_License
+ *
+ * Date: Thu Jul 28 11:46:10 2011 -0300
+ */
 (function ($) {
     var SCAN_WORDS = /\s*(?:<.*?>|[^\s<]+)/gm,
         SCAN_CHARS = /\s*(?:<.*?>|[^\s<])/gm,
         TAG_NAME = /^\s*<\/?([^\s>]+).*$/m,
         closingTag = "</",
-        dataName = "reticence";
+        dataName = "reticence",
+        reticentClass = "reticent";
     function tagName(str) {
         return str && str.replace(TAG_NAME, "$1");
     }
     function redraw($el) {
         var rdata = $el.data(dataName),
-            containerHeight = rdata.container.height(),
+            container = rdata.container,
+            containerHeight = container.height(),
             ancestor = rdata.ancestor, scan = rdata.scan,
-            p = scan.length - 1, i, c, captures = [], html, h, l;
+            p = scan.length - 1, i, c, captures = [], html,
+            i, h, l, reticent = false;
+        container.removeClass(reticentClass);
         do {
             if (html) {
                 do {
@@ -29,6 +45,10 @@
                     html = html.substr(0, l);
                 } while (i != 0 && p != -1);
                 $el.html(html + "..." + captures.join(""));
+                if (! reticent) {
+                  reticent = true;
+                  container.addClass(reticentClass);
+                }
             } else {
                 html = scan.join("");
                 l = html.length;
@@ -38,7 +58,7 @@
         } while (h > containerHeight && p != -1);
     }
     function bindRedraw($el) {
-        var r = null, f = function () {redraw($el);};
+        var r = null, f = function () {redraw($el); r = null;};
         $el.data(dataName).container.resize(function () {
             if (r) clearTimeout(r);
             r = setTimeout(f, 30);
@@ -60,7 +80,7 @@
         $el.data(dataName,
             {scan: $el.html().match(re), container: container, ancestor: ancestor});
         redraw($el);
-        if (options.resizable !== false && ! rdata) {
+        if (options.resizable !== false) {
             bindRedraw($el);
         }
     }
