@@ -25,7 +25,7 @@
             container = rdata.container,
             containerHeight = container.height(),
             ancestor = rdata.ancestor, scan = rdata.scan,
-            p = scan.length - 1, i, c, captures = [], html,
+            p = scan.length - 1, c, captures = [], html,
             i, h, l, reticent = false;
         container.removeClass(reticentClass);
         do {
@@ -80,7 +80,7 @@
         $el.data(dataName,
             {scan: $el.html().match(re), container: container, ancestor: ancestor});
         redraw($el);
-        if (options.resizable !== false) {
+        if (options.resizable) {
             bindRedraw($el);
         }
     }

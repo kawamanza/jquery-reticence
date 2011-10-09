@@ -13,7 +13,7 @@
   </style>
   <script>
   $(document).ready(function() {
-    $("#resizable").resizable().find("span").reticence({reduceMode: "char"});
+    $("#resizable").resizable().find("span").reticence({reduceMode: "char", resizable: true});
 	$(".res1 span").reticence();
 	$(window).resize(function(){$(".res1 span").reticence();});
   });
