@@ -23,7 +23,7 @@
     function redraw($el) {
         var rdata = $el.data(dataName),
             container = rdata.container,
-            containerHeight = container.height(),
+            containerHeight,
             ancestor = rdata.ancestor, scan = rdata.scan,
             p = scan.length - 1, c, captures = [], html,
             i, h, l, reticent = false;
@@ -53,6 +53,7 @@
                 html = scan.join("");
                 l = html.length;
                 $el.html(html);
+                containerHeight = container.height();
             }
             h = ancestor.height();
         } while (h > containerHeight && p != -1);
