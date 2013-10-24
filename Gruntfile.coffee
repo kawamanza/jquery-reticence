@@ -21,6 +21,7 @@ module.exports = (grunt) ->
     jshint:
       options:
         shadow: true
+        eqnull: true
       all: [
         'tmp/**/*.js'
       ]
