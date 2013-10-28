@@ -9,7 +9,7 @@ do ($ = jQuery) ->
       node = $ @
       attr = if node.css("overflow") is "hidden" then "container" else "ancestor"
       data[attr] = node
-      attr is "container"
+      attr is "ancestor"
     if data.container
       children = data.container.children()
       ancestor = data.ancestor
@@ -35,7 +35,7 @@ do ($ = jQuery) ->
       if html
         loop
           capture = scan[last--]
-          isCapturedTag = c.indexOf("<") + 1
+          isCapturedTag = capture.indexOf("<") + 1
           if isCapturedTag
             if capture.charAt(1) isnt "/" and captures.length and captures[0].indexOf("</") isnt -1 and tagName(capture) is tagName(captures[0])
               captures.shift()
@@ -77,6 +77,7 @@ do ($ = jQuery) ->
     return redraw element if data
     data = findContainer element
     regex = main.matchers[options.reduceMode or "char"]
+    data.text = element.html()
     data.scan = data.text.match regex
     element.data dataNamespace, data
     redraw element
