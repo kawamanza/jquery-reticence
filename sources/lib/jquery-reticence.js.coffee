@@ -78,7 +78,7 @@ do ($ = jQuery) ->
     data = findContainer element
     regex = main.matchers[options.reduceMode or "char"]
     data.scan = data.text.match regex
-    element.data data
+    element.data dataNamespace, data
     redraw element
     bindRedraw element if options.resizable
     return
