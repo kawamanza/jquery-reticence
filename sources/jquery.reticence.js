@@ -6,10 +6,10 @@
  * Licensed under the MIT License.
  * http://en.wikipedia.org/wiki/MIT_License
  *
- * Date: Fri Nov 08 09:21:17 2013 -0200
+ * Date: Fri Nov 14 09:58:17 2013 -0200
  */
 (function($) {
-  var TAG_NAME, applyReticence, bindRedraw, dataNamespace, findContainer, main, redraw, reticentClass, tagName;
+  var TAG_NAME, applyReticence, bindRedraw, checkCapture, dataNamespace, findContainer, main, redraw, reticentClass, tagName;
   dataNamespace = "reticence";
   reticentClass = "reticent";
   TAG_NAME = /^\s*<\/?([^\s>]+).*$/m;
@@ -42,47 +42,55 @@
   tagName = function(str) {
     return str && str.replace(TAG_NAME, "$1");
   };
+  checkCapture = function(element, o, html) {
+    var capture, captures, isCapturedTag, scan;
+    scan = o.scan;
+    captures = o.captures;
+    while (true) {
+      capture = scan[o.last--];
+      isCapturedTag = capture.indexOf("<") + 1;
+      if (isCapturedTag) {
+        if (capture.charAt(1) !== "/" && captures.length && captures[0].indexOf("</") !== -1 && tagName(capture) === tagName(captures[0])) {
+          captures.shift();
+        } else {
+          captures.unshift(capture);
+        }
+      }
+      o.len = o.len - capture.length;
+      html = html.substr(0, o.len);
+      if (o.last === -1 || !isCapturedTag) {
+        break;
+      }
+    }
+    element.html(html + "..." + captures.join(""));
+    if (!o.reticent) {
+      o.reticent = true;
+      o.container.addClass(reticentClass);
+    }
+  };
   redraw = function(element) {
-    var aHeight, ancestor, cHeight, capture, captures, container, data, html, isCapturedTag, last, len, reticent, scan;
+    var aHeight, ancestor, cHeight, data, html, o;
     data = element.data(dataNamespace);
-    scan = data.scan;
     ancestor = data.ancestor;
-    container = data.container;
-    last = scan.length - 1;
-    captures = [];
+    o = {
+      scan: data.scan,
+      container: data.container,
+      last: data.scan.length - 1,
+      captures: []
+    };
     while (true) {
       if (html) {
-        while (true) {
-          capture = scan[last--];
-          isCapturedTag = capture.indexOf("<") + 1;
-          if (isCapturedTag) {
-            if (capture.charAt(1) !== "/" && captures.length && captures[0].indexOf("</") !== -1 && tagName(capture) === tagName(captures[0])) {
-              captures.shift();
-            } else {
-              captures.unshift(capture);
-            }
-          }
-          len = len - capture.length;
-          html = html.substr(0, len);
-          if (last === -1 || !isCapturedTag) {
-            break;
-          }
-        }
-        element.html(html + "..." + captures.join(""));
-        if (!reticent) {
-          reticent = true;
-          container.addClass(reticentClass);
-        }
+        checkCapture(element, o, html);
       } else {
-        html = scan.join("");
-        len = html.length;
-        reticent = false;
-        container.removeClass(reticentClass);
+        html = o.scan.join("");
+        o.len = html.length;
+        o.reticent = false;
+        o.container.removeClass(reticentClass);
         element.html(html);
-        cHeight = container.height();
+        cHeight = o.container.height();
       }
       aHeight = ancestor.height();
-      if (aHeight <= cHeight || last === -1) {
+      if (aHeight <= cHeight || o.last === -1) {
         break;
       }
     }
