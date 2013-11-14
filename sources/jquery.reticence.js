@@ -6,7 +6,7 @@
  * Licensed under the MIT License.
  * http://en.wikipedia.org/wiki/MIT_License
  *
- * Date: Fri Nov 14 09:58:17 2013 -0200
+ * Date: Thu Nov 14 09:58:17 2013 -0200
  */
 (function($) {
   var TAG_NAME, applyReticence, bindRedraw, checkCapture, dataNamespace, findContainer, main, redraw, reticentClass, tagName;
