@@ -24,39 +24,46 @@ do ($ = jQuery) ->
 
   tagName = (str) -> str and str.replace TAG_NAME, "$1"
 
+  checkCapture = (element, o, html) ->
+    scan = o.scan
+    captures = o.captures
+    loop
+      capture = scan[o.last--]
+      isCapturedTag = capture.indexOf("<") + 1
+      if isCapturedTag
+        if capture.charAt(1) isnt "/" and captures.length and captures[0].indexOf("</") isnt -1 and tagName(capture) is tagName(captures[0])
+          captures.shift()
+        else
+          captures.unshift capture
+      o.len = o.len - capture.length
+      html = html.substr 0, o.len
+      break if o.last is -1 or not isCapturedTag
+    element.html html + "..." + captures.join("")
+    unless o.reticent
+      o.reticent = true
+      o.container.addClass reticentClass
+    return
+
   redraw = (element) ->
     data = element.data dataNamespace
-    scan = data.scan
     ancestor = data.ancestor
-    container = data.container
-    last = scan.length - 1
-    captures = []
+    o =
+      scan: data.scan
+      container: data.container
+      last: data.scan.length - 1
+      captures: []
     loop
       if html
-        loop
-          capture = scan[last--]
-          isCapturedTag = capture.indexOf("<") + 1
-          if isCapturedTag
-            if capture.charAt(1) isnt "/" and captures.length and captures[0].indexOf("</") isnt -1 and tagName(capture) is tagName(captures[0])
-              captures.shift()
-            else
-              captures.unshift capture
-          len = len - capture.length
-          html = html.substr 0, len
-          break if last is -1 or not isCapturedTag
-        element.html html + "..." + captures.join("")
-        unless reticent
-          reticent = true
-          container.addClass reticentClass
+        checkCapture element, o, html
       else
-        html = scan.join ""
-        len = html.length
-        reticent = false
-        container.removeClass reticentClass
+        html = o.scan.join ""
+        o.len = html.length
+        o.reticent = false
+        o.container.removeClass reticentClass
         element.html html
-        cHeight = container.height()
+        cHeight = o.container.height()
       aHeight = ancestor.height()
-      break if aHeight <= cHeight or last is -1
+      break if aHeight <= cHeight or o.last is -1
     return
 
   bindRedraw = (element) ->
