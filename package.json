@@ -1,14 +1,25 @@
 {
-    "name": "jQuery-Reticence",
+    "name": "jquery-reticence",
     "version": "0.2.0",
+    "description": "An elegant way to reticence text to fit the container area",
+    "author": "Marcelo Manzan <manzan@gmail.com>",
+    "homepage": "https://github.com/kawamanza/jquery-reticence",
+    "main": "./jquery.reticence.js",
     "scripts": {
         "test": "node_modules/grunt-cli/bin/grunt test"
     },
     "repository": {
         "type": "git",
-        "url": "git@github.com:kawamanza/jquery-reticence.git"
+        "url": "https://github.com/kawamanza/jquery-reticence.git"
     },
-    "author": "Marcelo Manzan",
+    "bugs": {
+        "url": "https://github.com/kawamanza/jquery-reticence/issues"
+    },
+    "keywords": [
+        "ellipsis",
+        "reticence",
+        "jquery-plugin"
+    ],
     "license": "MIT",
     "devDependencies": {
         "grunt-cli": "~0.1.9",
