@@ -10,4 +10,4 @@
 
 [http://jsfiddle.net/3gcjj/]
 
-[![Click here to lend your support to: jQuery Reticence Plugin and make a donation at pledgie.com !](https://pledgie.com/campaigns/30744.png?skin_name=chrome)](https://pledgie.com/campaigns/30744.png)
+[![Click here to lend your support to: jQuery Reticence Plugin and make a donation at pledgie.com !](https://pledgie.com/campaigns/30744.png?skin_name=chrome)](https://pledgie.com/campaigns/30744)
