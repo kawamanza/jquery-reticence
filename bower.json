@@ -1,0 +1,9 @@
+{
+  "name": "jquery-reticence",
+  "version": "0.2.0",
+  "main": "jquery.reticence.js",
+  "ignore": [
+    "Gruntfile.coffee",
+    ".*"
+  ]
+}
