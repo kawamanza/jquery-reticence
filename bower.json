@@ -1,9 +1,25 @@
 {
   "name": "jquery-reticence",
-  "version": "0.2.0",
-  "main": "jquery.reticence.js",
+  "description": "An elegant way to reticence text to fit the container area",
+  "main": "./jquery.reticence.js",
+  "authors": [
+    "Marcelo Manzan <manzan@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "ellipsis",
+    "reticence",
+    "jquery-plugin"
+  ],
+  "homepage": "https://github.com/kawamanza/jquery-reticence",
+  "moduleType": [
+    "amd"
+  ],
   "ignore": [
-    "Gruntfile.coffee",
-    ".*"
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
   ]
 }
